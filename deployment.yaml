@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
       - name: nodejs-k8s
-        image: nodejs-k8s:1.0
+        image: 411307820369.dkr.ecr.us-east-1.amazonaws.com/nodejs-k8s:latest
         ports:
         - containerPort: 3000
