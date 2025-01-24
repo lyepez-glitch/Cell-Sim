@@ -7,6 +7,11 @@ const User = require('./models/User');
 const Nanobot = require('./models/Nanobot');
 const Simulation = require('./models/Simulation');
 const { interactWithCell } = require('./nanobotLogic');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+
+
+const JWT_SECRET = process.env.JWT_SECRET;
 const cors = require('cors');
 app.use(express.json());
 app.use(cors());
@@ -24,6 +29,52 @@ const { createUser, createNanobot, createSimulation } = require('./userControlle
 app.get('/', (req, res) => {
     res.send('Welcome to the Nanobot Simulation API');
 });
+
+app.post('/login', async(req, res) => {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+        return res.status(400).json({ error: 'Email and password are required' });
+    }
+
+    try {
+        // 1. Find the user by email
+        const user = await User.findOne({ where: { email } }); // Sequelize example
+        // For Mongoose, it would be: const user = await User.findOne({ email });
+
+        if (!user) {
+            return res.status(400).json({ error: 'Invalid email or password' });
+        }
+
+        // 2. Compare the provided password with the stored hash
+        const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
+
+        if (!isPasswordValid) {
+            return res.status(400).json({ error: 'Invalid email or password' });
+        }
+
+        // 3. Generate a JWT or Session Token
+        const token = jwt.sign({ userId: user.id, username: user.username, email: user.email },
+            JWT_SECRET, { expiresIn: '1h' } // Set expiration time as needed
+        );
+
+        // 4. Return the token (or other user details) as a response
+        res.status(200).json({
+            message: 'Login successful',
+            token, // Send token to the client
+            user: {
+                username: user.username,
+                email: user.email,
+                id: user.id
+            },
+        });
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Something went wrong. Please try again later.' });
+    }
+});
+
 
 // CRUD routes for Users
 app.post('/users', async(req, res) => {
@@ -61,16 +112,26 @@ app.post('/nanobots', async(req, res) => {
 });
 
 app.get('/nanobots', async(req, res) => {
-    try {
-        // Fetch all nanobots
-        const nanobots = await Nanobot.findAll();
-        if (nanobots.length === 0) {
-            return res.status(404).json({ error: 'No nanobots found' });
-        }
-        res.json(nanobots);
-    } catch (err) {
-        res.status(400).json({ error: err.message });
+    // try {
+    //     // Fetch all nanobots
+    //     const nanobots = await Nanobot.findAll();
+    //     if (nanobots.length === 0) {
+    //         return res.status(404).json({ error: 'No nanobots found' });
+    //     }
+    //     res.json(nanobots);
+    // } catch (err) {
+    //     res.status(400).json({ error: err.message });
+    // }
+
+    // Fetch all nanobots
+    let nanobots = await Nanobot.findAll();
+    console.log('nanobots', nanobots);
+    if (nanobots.length === 0) {
+        // return res.status(404).json({ error: 'No nanobots found' });
+        nanobots = [];
     }
+    res.json(nanobots);
+
 });
 
 app.get('/nanobots/:id', async(req, res) => {
@@ -121,7 +182,10 @@ app.put('/simulations/:id', async(req, res) => {
     const { id } = req.params;
     // const { simulationName, status, startTime, results } = req.body;
     const { simulationName, status, startTime, userId, nanobotId, results } = req.body;
-    console.log('req update sim payload', req.body)
+    // console.log('res', results, typeof results);
+    // console.log('req update sim payload', req.body)
+    // const simulation = await Simulation.findByPk(id);
+    // console.log('sim', typeof simulation.results, JSON.parse(simulation.results));
 
     try {
         const simulation = await Simulation.findByPk(id);
@@ -133,12 +197,13 @@ app.put('/simulations/:id', async(req, res) => {
         if (!nanobot) {
             return res.status(404).json({ error: 'Nanobot not found' });
         }
-
-        if (!simulation.results || !Array.isArray(simulation.results)) {
+        console.log('sim results', simulation.results);
+        const parsedResults = JSON.parse(simulation.results)
+        if (!parsedResults || !Array.isArray(parsedResults)) {
             return res.status(400).json({ error: 'Invalid cell data provided' });
         }
 
-        const cellResults = simulation.results.map((cell) => {
+        const cellResults = parsedResults.map((cell) => {
             const cellResult = interactWithCell(cell, nanobot.name);
             return {...cell, cellResult };
         });
@@ -148,7 +213,7 @@ app.put('/simulations/:id', async(req, res) => {
         simulation.status = status || simulation.status;
         simulation.startTime = startTime || simulation.startTime;
         simulation.nanobotId = nanobotId || simulation.nanobotId;
-        simulation.results = cellResults || simulation.results;
+        simulation.results = JSON.stringify(cellResults) || JSON.stringify(simulation.results);
 
         await simulation.save();
         res.json(simulation);

@@ -14,7 +14,7 @@ const Simulation = sequelize.define('Simulation', {
         defaultValue: 'pending', // Default status
     },
     results: {
-        type: DataTypes.JSON, // JSON type to store simulation results
+        type: DataTypes.TEXT, // JSON type to store simulation results
         allowNull: true,
     },
     startTime: {

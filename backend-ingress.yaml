@@ -1,18 +1,26 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: nodejs-backend-ingress
-  annotations:
-    kubernetes.io/ingress.class: "nginx"  # Ensure the correct ingress controller is used
+  name: app-ingress
 spec:
   rules:
-  - host: a7f784e35db984efbbb175fb2dc129c0-486246873.us-east-1.elb.amazonaws.com
+  - host: frontend.local
     http:
       paths:
       - path: /
         pathType: Prefix
         backend:
           service:
-            name: nodejs-k8s
+            name: frontend-service
+            port:
+              number: 80
+  - host: backend.local
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: backend-service
             port:
               number: 80
