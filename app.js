@@ -1,11 +1,14 @@
 require('dotenv').config()
 const express = require('express');
+const { Sequelize, DataTypes } = require('sequelize');
 const app = express();
 const PORT = process.env.PORT || 3000;
 const sequelize = require('./db');
-const User = require('./models/User');
-const Nanobot = require('./models/Nanobot');
-const Simulation = require('./models/Simulation');
+const Profile = require('./models/Profile')(sequelize, Sequelize.DataTypes);
+const Nanobot = require('./models/nanobot')(sequelize, Sequelize.DataTypes);
+const Simulation = require('./models/simulation')(sequelize, Sequelize.DataTypes);
+
+
 const { interactWithCell } = require('./nanobotLogic');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
@@ -39,7 +42,7 @@ app.post('/login', async(req, res) => {
 
     try {
         // 1. Find the user by email
-        const user = await User.findOne({ where: { email } }); // Sequelize example
+        const user = await Profile.findOne({ where: { email } }); // Sequelize example
         // For Mongoose, it would be: const user = await User.findOne({ email });
 
         if (!user) {
@@ -47,7 +50,7 @@ app.post('/login', async(req, res) => {
         }
 
         // 2. Compare the provided password with the stored hash
-        const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
+        const isPasswordValid = await bcrypt.compare(password, user.password);
 
         if (!isPasswordValid) {
             return res.status(400).json({ error: 'Invalid email or password' });
@@ -78,9 +81,11 @@ app.post('/login', async(req, res) => {
 
 // CRUD routes for Users
 app.post('/users', async(req, res) => {
-    const { username, email, passwordHash } = req.body;
+    const { username, email, password } = req.body;
+    const hashedPassword = await bcrypt.hash(password, 10);
+    console.log('req body', req.body, password);
     try {
-        const user = await User.create({ username, email, passwordHash });
+        const user = await Profile.create({ username, email, password: hashedPassword });
         res.status(201).json(user);
     } catch (err) {
         res.status(400).json({ error: err.message });
@@ -90,10 +95,14 @@ app.post('/users', async(req, res) => {
 app.get('/users/:id', async(req, res) => {
     const { id } = req.params;
     try {
-        const user = await User.findByPk(id);
+        // Fetch user by ID
+        const user = await Profile.findByPk(id);
+
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }
+
+        // Return the user data
         res.json(user);
     } catch (err) {
         res.status(400).json({ error: err.message });
@@ -263,6 +272,6 @@ app.post('/simulate-nanobot', async(req, res) => {
     }
 });
 
-app.listen(PORT, () => {
+app.listen(8081, () => {
     console.log(`Server is running on port ${PORT}`);
 });
