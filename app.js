@@ -73,7 +73,7 @@ app.post('/login', async(req, res) => {
         });
 
     } catch (err) {
-        console.error(err);
+        // console.error(err);
         res.status(500).json({ error: 'Something went wrong. Please try again later.' });
     }
 });
@@ -83,7 +83,7 @@ app.post('/login', async(req, res) => {
 app.post('/users', async(req, res) => {
     const { username, email, password } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
-    console.log('req body', req.body, password);
+
     try {
         const user = await Profile.create({ username, email, password: hashedPassword });
         res.status(201).json(user);
@@ -134,7 +134,7 @@ app.get('/nanobots', async(req, res) => {
 
     // Fetch all nanobots
     let nanobots = await Nanobot.findAll();
-    console.log('nanobots', nanobots);
+
     if (nanobots.length === 0) {
         // return res.status(404).json({ error: 'No nanobots found' });
         nanobots = [];
@@ -206,7 +206,7 @@ app.put('/simulations/:id', async(req, res) => {
         if (!nanobot) {
             return res.status(404).json({ error: 'Nanobot not found' });
         }
-        console.log('sim results', simulation.results);
+
         const parsedResults = JSON.parse(simulation.results)
         if (!parsedResults || !Array.isArray(parsedResults)) {
             return res.status(400).json({ error: 'Invalid cell data provided' });
@@ -272,6 +272,6 @@ app.post('/simulate-nanobot', async(req, res) => {
     }
 });
 
-app.listen(8081, () => {
+app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
