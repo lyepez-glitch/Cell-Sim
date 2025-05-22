@@ -5,8 +5,8 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const sequelize = require('./db');
 const Profile = require('./models/Profile')(sequelize, Sequelize.DataTypes);
-const Nanobot = require('./models/nanobot')(sequelize, Sequelize.DataTypes);
-const Simulation = require('./models/simulation')(sequelize, Sequelize.DataTypes);
+const Nanobot = require('./models/Nanobot')(sequelize, Sequelize.DataTypes);
+const Simulation = require('./models/Simulation')(sequelize, Sequelize.DataTypes);
 
 
 const { interactWithCell } = require('./nanobotLogic');

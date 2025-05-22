@@ -1,8 +1,8 @@
 // userController.js
 
-const User = require('./models/user');
-const Nanobot = require('./models/nanobot');
-const Simulation = require('./models/simulation');
+const User = require('./models/User');
+const Nanobot = require('./models/Nanobot');
+const Simulation = require('./models/Simulation');
 
 // Create a new User
 const createUser = async() => {
