@@ -160,6 +160,7 @@ app.get('/nanobots/:id', async(req, res) => {
 app.post('/simulations', async(req, res) => {
     const { simulationName, status, startTime, userId, nanobotId, results } = req.body;
     console.log('results', results);
+    const strResults = JSON.stringify(results);
     try {
         const simulation = await Simulation.create({
             simulationName,
@@ -167,7 +168,7 @@ app.post('/simulations', async(req, res) => {
             startTime,
             userId,
             nanobotId,
-            JSON.stringify(results),
+            strResults,
         });
         res.status(201).json(simulation);
     } catch (err) {
