@@ -159,6 +159,7 @@ app.get('/nanobots/:id', async(req, res) => {
 // CRUD routes for Simulations
 app.post('/simulations', async(req, res) => {
     const { simulationName, status, startTime, userId, nanobotId, results } = req.body;
+    console.log('results', results);
     try {
         const simulation = await Simulation.create({
             simulationName,
@@ -166,7 +167,7 @@ app.post('/simulations', async(req, res) => {
             startTime,
             userId,
             nanobotId,
-            results,
+            JSON.stringify(results),
         });
         res.status(201).json(simulation);
     } catch (err) {
