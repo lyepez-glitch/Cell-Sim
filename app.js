@@ -227,10 +227,11 @@ app.put('/simulations/:id', async(req, res) => {
         simulation.startTime = startTime || simulation.startTime;
         simulation.nanobotId = nanobotId || simulation.nanobotId;
         simulation.results = JSON.stringify(cellResults) || JSON.stringify(simulation.results);
-
+        console.log('updated sim', simulation);
         await simulation.save();
         res.json(simulation);
     } catch (err) {
+        console.log('err', err.message)
         res.status(400).json({ error: err.message });
     }
 });
