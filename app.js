@@ -112,10 +112,12 @@ app.get('/users/:id', async(req, res) => {
 // CRUD routes for Nanobots
 app.post('/nanobots', async(req, res) => {
     const { name, userId, status } = req.body;
+    console.log('userid', typeof userId, userId);
     try {
         const nanobot = await Nanobot.create({ name, userId, status });
         res.status(201).json(nanobot);
     } catch (err) {
+        console.log('err', err.message);
         res.status(400).json({ error: err.message });
     }
 });
