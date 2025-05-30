@@ -170,7 +170,7 @@ app.post('/simulations', async(req, res) => {
             startTime,
             userId,
             nanobotId,
-            strResults,
+            results: strResults,
         });
         res.status(201).json(simulation);
     } catch (err) {
