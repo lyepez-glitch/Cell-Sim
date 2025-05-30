@@ -196,9 +196,9 @@ app.put('/simulations/:id', async(req, res) => {
     // const { simulationName, status, startTime, results } = req.body;
     const { simulationName, status, startTime, userId, nanobotId, results } = req.body;
     // console.log('res', results, typeof results);
-    // console.log('req update sim payload', req.body)
-    // const simulation = await Simulation.findByPk(id);
-    // console.log('sim', typeof simulation.results, JSON.parse(simulation.results));
+    console.log('req update sim payload', req.body)
+        // const simulation = await Simulation.findByPk(id);
+        // console.log('sim', typeof simulation.results, JSON.parse(simulation.results));
 
     try {
         const simulation = await Simulation.findByPk(id);
@@ -210,7 +210,7 @@ app.put('/simulations/:id', async(req, res) => {
         if (!nanobot) {
             return res.status(404).json({ error: 'Nanobot not found' });
         }
-
+        console.log('results', simulation.results)
         const parsedResults = JSON.parse(simulation.results)
         console.log('parsed results', parsedResults);
         console.log('parsed results', parsedResults, typeof parsedResults);
