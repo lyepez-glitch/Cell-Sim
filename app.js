@@ -212,6 +212,7 @@ app.put('/simulations/:id', async(req, res) => {
         }
 
         const parsedResults = JSON.parse(simulation.results)
+        console.log('parsed results', parsedResults);
         console.log('parsed results', parsedResults, typeof parsedResults);
         if (!parsedResults || !Array.isArray(parsedResults)) {
             return res.status(400).json({ error: 'Invalid cell data provided' });
