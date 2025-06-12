@@ -19,7 +19,7 @@ const cors = require('cors');
 app.use(express.json());
 app.use(cors());
 // Sync models with the database
-sequelize.sync({ force: true }) // Set force: true to drop and recreate tables (use with caution)
+sequelize.sync({ force: false }) // Set force: true to drop and recreate tables (use with caution)
     .then(() => {
         console.log('Database synchronized');
     })
