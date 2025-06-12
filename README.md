@@ -1,4 +1,5 @@
 🧠 Nanobot Simulation API
+
 This is the backend for the Nanobot Simulation App, a full-stack project where users can:
 
 ✅ Sign up and log in
@@ -40,32 +41,26 @@ Hosting: Render
 
 ⚙️ Getting Started
 1. Clone the repo
-bash
-Copy
-Edit
+
 git clone https://github.com/your-username/nanobot-backend.git
 cd nanobot-backend
 2. Install dependencies
-bash
-Copy
-Edit
+
 npm install
 3. Set up your .env file
 Create a .env file in the root directory and fill in your database and secret info:
 
-ini
-Copy
-Edit
+
 DB_HOST=your_host
 DB_USER=your_user
 DB_PASSWORD=your_password
 DB_NAME=your_db_name
 DB_PORT=3306
 JWT_SECRET=your_jwt_secret
+
+
 4. Start the server
-bash
-Copy
-Edit
+
 npm start
 Server will run on http://localhost:3000 by default.
 
@@ -115,9 +110,7 @@ Body: { nanobotId, cells }
 Simulation logic uses a function interactWithCell(cell, nanobotName) to simulate cell healing, damage, or analysis based on nanobot behavior.
 
 🧰 Scripts
-bash
-Copy
-Edit
+
 npm start            # Run the server
 npm run db           # Test database connection
 🗃 Database
@@ -135,9 +128,6 @@ Simulation
 
 To recreate the schema:
 
-js
-Copy
-Edit
 sequelize.sync({ force: false });
 🛠 Future Improvements
 Add token verification middleware
