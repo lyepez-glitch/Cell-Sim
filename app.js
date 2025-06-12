@@ -114,7 +114,7 @@ app.post('/nanobots', async(req, res) => {
     const { name, userId, status } = req.body;
     console.log('userid', typeof userId, userId);
     try {
-        const nanobot = await Nanobot.create({ name, userId: userId.toString(), status });
+        const nanobot = await Nanobot.create({ name, userId: parseInt(userId), status });
         res.status(201).json(nanobot);
     } catch (err) {
         console.log('err', err.message);
